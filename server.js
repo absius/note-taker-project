@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const db = require("./db/db.json");
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +21,15 @@ app.get('/', (req, res) => {
     return res.json(db);
   });
 
+  app.get('/api/notes/:id', (req, res) => {
+    for(let i=0;i<db.length;i++){
+      if (db[i].id == req.params.id){
+        return res.json(db[i]);
+
+      }
+    }
+  });
+
   app.post('/api/notes', (req, res) => {
     req.body.id = db.length + 1;
      db.push(req.body);
@@ -32,7 +41,6 @@ app.get('/', (req, res) => {
 
   app.delete('/api/notes/:id', (req, res) => {
     const newArray = db;
-    console.log(req.params.id);
     for(let i=0;i<newArray.length;i++){
       if (newArray[i].id == req.params.id){
         newArray.splice(i,1);
